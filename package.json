@@ -17,12 +17,14 @@
     "sizecheck": "npx vite-bundle-visualizer"
   },
   "dependencies": {
+    "@alova/adapter-axios": "^1.2.6",
     "@antv/g2": "^5.1.19",
     "@unhead/vue": "^1.9.5",
     "@unocss/reset": "^0.59.4",
     "@vant/auto-import-resolver": "^1.1.0",
     "@vueuse/core": "^10.9.0",
     "@vueuse/head": "^2.0.0",
+    "alova": "^2.20.3",
     "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
     "vant": "^4.9.0",

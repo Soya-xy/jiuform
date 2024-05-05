@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@alova/adapter-axios':
+    specifier: ^1.2.6
+    version: 1.2.6
   '@antv/g2':
     specifier: ^5.1.19
     version: 5.1.19
@@ -23,6 +26,9 @@ dependencies:
   '@vueuse/head':
     specifier: ^2.0.0
     version: 2.0.0(vue@3.4.26)
+  alova:
+    specifier: ^2.20.3
+    version: 2.20.3
   nprogress:
     specifier: ^0.2.0
     version: 0.2.0
@@ -168,6 +174,10 @@ devDependencies:
     version: 2.0.16(typescript@5.4.5)
 
 packages:
+
+  /@alova/adapter-axios@1.2.6:
+    resolution: {integrity: sha512-Sog6t54z2ltlFLVzxmSoEJ5A1LyiI9OUG8NK1vGUYszsuglED9DCtsSPvK+Q73jUbvH8WIBsSAiyCGPBi1vSCQ==}
+    dev: false
 
   /@ampproject/remapping@2.3.0:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -4056,6 +4066,11 @@ packages:
       repeat-string: 1.6.1
     dev: false
 
+  /alova@2.20.3:
+    resolution: {integrity: sha512-uCs+KiKtUiZGjDIC/qcP+6juKZJ1zz3iHO5AL7w2JUpOA2Py7B0tzj9u3yAOCjoxH2yQFI6IMcDvORVM3Zfcmw==}
+    engines: {node: '>= 0.12.0'}
+    dev: false
+
   /amdefine@1.0.1:
     resolution: {integrity: sha512-S2Hw0TtNkMJhIabBwIojKL9YHO5T0n5eNqWJ7Lrlel/zDbftQpxpapi8tZs3X1HWa+u+QeydGmzzNU0m09+Rcg==}
     engines: {node: '>=0.4.2'}
@@ -6968,7 +6983,7 @@ packages:
     dev: true
 
   /is-module@1.0.0:
-    resolution: {integrity: sha512-51ypPSPCoTEIN9dy5Oy+h4pShgJmPCygKfyRCISBI+JoWT/2oJvK8QPxmwv7b/p239jXrm9M1mlQbyKJ5A152g==}
+    resolution: {integrity: sha1-Mlj7afeMFNW4FdZkM2tM/7ZEFZE=}
     dev: true
 
   /is-negative-zero@2.0.3:
