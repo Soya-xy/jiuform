@@ -115,4 +115,14 @@ export default defineConfig({
     // TODO: workaround until they support native ESM
     noExternal: ['workbox-window'],
   },
+  server: {
+    host: '0.0.0.0',
+    cors: true,
+    proxy: {
+      '/api': {
+        target: `https://frp.xiaoyio.com`,
+      },
+
+    },
+  },
 })

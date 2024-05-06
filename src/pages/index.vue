@@ -1,7 +1,70 @@
 <script setup>
+import { sendSms, submit, upload } from '~/service/api'
+
 const answer = ref({})
+const sms = ref('')
+const videoUrl = ref('')
+const isSend = ref(false)
+const seconds = ref(60)
 function onSubmit(values) {
-  console.log('submit', values)
+  if (!videoUrl.value)
+    return showToast('请上传视频')
+  if (!sms.value)
+    return showToast('请填写验证码')
+  if (!answer.value['姓名'])
+    return showToast('请填写姓名')
+  if (!answer.value['手机号码'])
+    return showToast('请填写手机号')
+  if (!answer.value['身份证号码'])
+    return showToast('请填写身份证号码')
+
+  const jsonText = JSON.parse(JSON.stringify(values))
+  delete jsonText['姓名']
+  delete jsonText['手机号码']
+  delete jsonText['身份证号码']
+
+  submit({
+    name: values['姓名'],
+    idCard: values['身份证号码'],
+    phone: values['手机号码'],
+    videoUrl: videoUrl.value,
+    smsCode: sms.value,
+    questionJson: jsonText,
+  }).then((res) => {
+    if (res.code === 0) {
+      showToast('提交成功')
+      setTimeout(() => {
+        router.push('/result')
+      }, 1000)
+    }
+  }).catch((err) => {
+    showToast({
+      message: err.message,
+      type: 'fail',
+    })
+  })
+}
+
+function sendSmsClick() {
+  if (!answer.value['手机号码'])
+    return showToast('请填写手机号')
+
+  let i = null
+  sendSms({
+    phone: answer.value['手机号码'],
+  }).then(() => {
+    isSend.value = true
+    showToast('发送成功')
+
+    i = setInterval(() => {
+      seconds.value--
+      if (seconds.value <= 1) {
+        clearInterval(i)
+        isSend.value = false
+        seconds.value = 60
+      }
+    }, 1000)
+  })
 }
 
 const question = ref([
@@ -156,11 +219,41 @@ const question = ref([
     placeholder: '请输入经理姓名',
   },
 ])
+
+// 确认文件之前的钩子，返回 false 可停止读取文件
+function beforeRead(file) {
+  // 检查文件类型，这里只允许视频
+  if (file.type !== 'video/mp4') {
+    showToast('请上传 MP4 格式的视频')
+    return false
+  }
+  return true
+}
+// 文件读取完成后的钩子
+function afterRead(file) {
+  const formData = new FormData()
+  formData.append('file', file.file)
+  upload(formData).then((res) => {
+    if (res.data?.file) {
+      showToast('上传成功')
+      videoUrl.value = res.data.file.url
+    }
+  })
+    .catch((error) => {
+      // 处理上传失败的错误
+      showToast({
+        message: error.message,
+        type: 'fail',
+      })
+    })
+}
 </script>
 
 <template>
   <div>
     <van-nav-bar safe-area-inset-top title="问卷调查" />
+    <img src="/logo.jpg" alt="">
+
     <van-form mt4 @submit="onSubmit">
       <van-cell-group inset>
         <template v-for="v, k in question" :key="k">
@@ -184,7 +277,8 @@ const question = ref([
           />
 
           <van-field
-            v-if="v.type === 'radio'" :name="v.title" :label="v.title" required :label-width="v.labelWidth || '6em'"
+            v-if="v.type === 'radio'" :name="v.title" :label="v.title" required
+            :label-width="v.labelWidth || '6em'"
           >
             <template #input>
               <van-radio-group v-model="answer[v.title]" direction="horizontal">
@@ -194,7 +288,10 @@ const question = ref([
               </van-radio-group>
             </template>
           </van-field>
-          <van-field v-if="v.type === 'checkbox'" :name="v.title" :label="v.title" required :label-width="v.labelWidth || '6em'">
+          <van-field
+            v-if="v.type === 'checkbox'" :name="v.title" :label="v.title" required
+            :label-width="v.labelWidth || '6em'"
+          >
             <template #input>
               <van-checkbox-group v-model="answer[v.title]" direction="horizontal">
                 <van-checkbox v-for="item, idx in v.options" :key="idx" shape="square" :name="item.label">
@@ -205,6 +302,19 @@ const question = ref([
           </van-field>
         </template>
       </van-cell-group>
+      <van-field v-model="sms" center clearable label="短信验证码" placeholder="请输入短信验证码">
+        <template #button>
+          <van-button size="small" type="primary" @click="sendSmsClick">
+            {{ isSend ? `${seconds}秒后重新发现` : '发送验证码' }}
+          </van-button>
+        </template>
+      </van-field>
+      <van-cell v-model="sms" center clearable readonly="" title="请上传自拍视频">
+        <van-uploader v-if="!videoUrl" :after-read="afterRead" :before-read="beforeRead" multiple accept="video/*" />
+        <p v-else>
+          上传成功
+        </p>
+      </van-cell>
       <div style="margin: 16px;" pb10>
         <van-button round block type="primary" native-type="submit">
           提交

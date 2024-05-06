@@ -2,17 +2,24 @@ import { alovaInstance } from '../request'
 
 const api = alovaInstance()
 
-export const loginApi = (e: any) => api.Post('/login', e)
-export const getOrderFlow = (e?: any) => api.Post<any>('/order_flow/query', e)
-export const addOrderFlow = (e?: any) => api.Post<any>('/order_flow/insert', e)
-export const updateOrderFlow = (e?: any) => api.Post<any>('/order_flow/update', e)
-export const addOrderAction = (e?: any) => api.Post<any>('/order_flow/order_action', e)
-export const getStations = (e?: any) => api.Get<any>('/get_stations', e)
-export const getUsers = (e?: any) => api.Get<any>('/get_users', e)
-
 // 中心
-export const getUndistributed = (e?: any) => api.Get<any>('/center/undistributed', e)
-export const getCenterAuditQuota = (e?: any) => api.Post<any>('/center/audit_quota', e)
+export const submit = (e?: any) => api.Post<any>('/v2/form/submit', e)
+export function sendSms(e?: any) {
+  return api.Get<any>('/v2/form/sms', {
+    params: e,
+  })
+}
+export function findByPhone(e?: any) {
+  return api.Get<any>('/v2/form/findByPhone', {
+    params: e,
+  })
+}
+export function upload(e?: any) {
+  return api.Post<any>('/v2/form/uploadFile', e, {
+    // 开启上传进度
+    enableUpload: true,
+  })
+}
 export const distribution = (e?: any) => api.Post<any>('/center/distribution', e)
 
 // 收费站

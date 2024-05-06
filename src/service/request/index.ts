@@ -2,12 +2,11 @@ import { createAlova } from 'alova'
 import GlobalFetch from 'alova/GlobalFetch'
 import VueHook from 'alova/vue'
 import { axiosRequestAdapter } from '@alova/adapter-axios'
-import { createDiscreteApi } from 'naive-ui'
 import { router } from '~/modules/router'
 
 // const baseURL = import.meta.env.DEV ? '/api' : ''
+// const baseURL = 'http://frp.xiaoyio.com/api'
 const baseURL = '/api'
-const { message } = createDiscreteApi(['message'])
 export function alovaInstance(base = baseURL) {
   return createAlova({
     baseURL: base,
@@ -26,22 +25,15 @@ export function alovaInstance(base = baseURL) {
         if (res.status === 401)
           return router.replace('/login')
 
-        if (res.status) {
-          try {
-            if (data?.err) {
-              message.error(data.err)
-              throw new Error(data.err)
-            }
-          }
-          catch (err) {
-            throw new Error(res.statusText)
-          }
+        if (data.code !== 0) {
+          if (data?.err)
+            throw new Error(data.err)
+          if (data?.msg)
+            throw new Error(data.msg)
         }
         else {
-          if (data?.err) {
-            message.error(data.err)
+          if (data?.err)
             throw new Error(data.err)
-          }
         }
         switch (method.meta?.type) {
           case 'text':
@@ -53,7 +45,7 @@ export function alovaInstance(base = baseURL) {
         if (!contentType?.includes('json'))
           throw new Error(`invalid content type: ${contentType}`)
 
-        return (data?.msg ? data.msg : data) as any
+        return data as any
       },
       onError: (err, method) => {
         console.log('🚀 ~ alovaInstance ~ err, method:', err, method)
