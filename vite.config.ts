@@ -120,7 +120,8 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: `https://frp.xiaoyio.com`,
+        target: `https://form.guosuan.cc`,
+        // target: `https://frp.xiaoyio.com`,
       },
 
     },

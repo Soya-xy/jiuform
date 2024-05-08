@@ -3,8 +3,17 @@ import { Chart } from '@antv/g2'
 import { findByPhone } from '~/service/api'
 
 const value = ref('')
-const info = ref()
+const info = ref(undefined)
 
+const route = useRoute()
+const router = useRouter()
+
+if (route.query.phone) {
+  value.value = route.query.phone
+  search()
+}
+
+const active = ref('search')
 function search() {
   findByPhone({
     phone: value.value,
@@ -86,6 +95,11 @@ function search() {
         type: 'fail',
       })
     }
+  }).catch((err) => {
+    showToast({
+      message: err.message,
+      type: 'fail',
+    })
   })
 }
 </script>
@@ -93,22 +107,10 @@ function search() {
 <template>
   <div>
     <van-nav-bar safe-area-inset-top title="结果查询" />
-    <img src="/logo.png" h-50 w-full alt="">
-
-    <div v-if="info?.matchRate > 0">
-      <h1 my-4>
-        恭喜您，获得本次考察会现场的高额名酒配比额度为
-      </h1>
-      <div id="container" />
-      <p>我们会尽快与您联系，谢谢！</p>
+    <div my-4 w-full flex justify-center>
+      <img src="/logo.png" h-100px alt="">
     </div>
-    <div v-else-if="info?.matchRate <= 0">
-      <van-empty image="error" description="很遗憾，您未能获得本次考察会现场的高额名酒配比额度" />
-    </div>
-    <div v-else-if="info?.matchRate === null">
-      <van-empty description="请确保你的资料填写真实有效，  审核中" />
-    </div>
-    <div v-else my-4 px4>
+    <div v-if="info === undefined" my-4 px4>
       <van-cell-group>
         <van-field v-model="value" label="手机号" placeholder="请输入手机号" />
       </van-cell-group>
@@ -118,10 +120,35 @@ function search() {
         </van-button>
       </div>
     </div>
+    <div v-if="info?.matchRate > 0">
+      <h1 my-4>
+        恭喜您 {{ info.name }} 先生/女士，获得本次考察会现场的高额名酒配比额度为
+      </h1>
+      <div id="container" />
+      <p>我们会尽快与您联系，谢谢！</p>
+    </div>
 
-    <div text-sm text-gray>
+    <div v-else-if="info?.matchRate === null">
+      <p my-20 text-3xl text-lightBlue>
+        请确保你的资料填写真实有效，审核中
+      </p>
+    </div>
+    <div v-else-if="info?.matchRate <= 0">
+      <van-empty image="error" description="很遗憾，您未能获得本次考察会现场的高额名酒配比额度" />
+    </div>
+
+    <div text-gray sm:text-sm sm:text-xl>
       <p>名酒配额</p>
       <p>贵州茅台股份有限公司出品</p>
     </div>
+
+    <van-tabbar v-model="active">
+      <van-tabbar-item icon="home-o" name="home" @click="router.push('/form')">
+        配额申购
+      </van-tabbar-item>
+      <van-tabbar-item icon="search" name="search">
+        配额查询
+      </van-tabbar-item>
+    </van-tabbar>
   </div>
 </template>

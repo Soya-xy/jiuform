@@ -23,8 +23,11 @@ export function alovaInstance(base = baseURL) {
     responded: {
       onSuccess: async (res, method) => {
         const data = await res.json()
-        if (res.status === 401)
-          return router.replace('/login')
+        if (res.status === 401) {
+          showToast('请重新登录')
+          router.replace('/')
+          return new Error('请重新登录')
+        }
 
         if (data.code !== 0) {
           if (data?.err)

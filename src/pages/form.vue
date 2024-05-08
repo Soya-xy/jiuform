@@ -1,4 +1,5 @@
 <script setup>
+import { router } from '~/modules/router'
 import { sendSms, submit, upload } from '~/service/api'
 
 const answer = ref({})
@@ -6,9 +7,24 @@ const sms = ref('')
 const videoUrl = ref('')
 const isSend = ref(false)
 const seconds = ref(60)
+
+const active = ref('home')
+onMounted(() => {
+  const token = sessionStorage.getItem('token')
+  if (!token) {
+    showToast({
+      message: '请先登录',
+      type: 'fail',
+      onClose: () => {
+        router.replace('/')
+      },
+    })
+  }
+})
+
 function onSubmit(values) {
-  if (!videoUrl.value)
-    return showToast('请上传视频')
+  // if (!videoUrl.value)
+  //   return showToast('请上传视频')
   if (!sms.value)
     return showToast('请填写验证码')
   if (!answer.value['姓名'])
@@ -34,7 +50,7 @@ function onSubmit(values) {
     if (res.code === 0) {
       showToast('提交成功')
       setTimeout(() => {
-        router.push('/result')
+        router.replace(`/result?phone=${values['手机号码']}`)
       }, 1000)
     }
   }).catch((err) => {
@@ -52,18 +68,26 @@ function sendSmsClick() {
   let i = null
   sendSms({
     phone: answer.value['手机号码'],
-  }).then(() => {
-    isSend.value = true
-    showToast('发送成功')
+  }).then((res) => {
+    if (res.code === 0) {
+      isSend.value = true
+      showToast('发送成功')
 
-    i = setInterval(() => {
-      seconds.value--
-      if (seconds.value <= 1) {
-        clearInterval(i)
-        isSend.value = false
-        seconds.value = 60
-      }
-    }, 1000)
+      i = setInterval(() => {
+        seconds.value--
+        if (seconds.value <= 1) {
+          clearInterval(i)
+          isSend.value = false
+          seconds.value = 60
+        }
+      }, 1000)
+    }
+    else {
+      showToast({
+        message: res.message,
+        type: 'fail',
+      })
+    }
   })
 }
 
@@ -106,6 +130,7 @@ const question = ref([
   {
     title: '自有企业名称',
     type: 'input',
+    noRequired: true,
     placeholder: '请输入自有企业名称',
   },
   {
@@ -129,9 +154,10 @@ const question = ref([
     ],
   },
   {
-    title: '计划投入资金（单位/万）',
+    title: '计划投入资金（万元）',
     type: 'input',
     labelWidth: '100%',
+    rightContent: '万元',
     placeholder: '请输入金额',
   },
   {
@@ -285,21 +311,18 @@ function afterRead(file) {
         <template v-for="v, k in question" :key="k">
           <van-field
             v-if="v.type === 'input'" v-model="answer[v.title]" :label-width="v.labelWidth || '6em'"
-            :name="v.title" :placeholder="v.placeholder" required :label="v.title"
-          />
-          <template v-if="v.type === 'idcard'">
-            <van-field
-              v-model="answer[v.title]" :label-width="v.labelWidth || '6em'" readonly clickable required
-              :label="v.title" :name="v.title" placeholder="请输入身份证号码" @touchstart.stop="v.show = true"
-            />
-            <van-number-keyboard
-              v-model="answer[v.title]" :show="v.show" extra-key="X" close-button-text="完成"
-              @blur="v.show = false"
-            />
-          </template>
+            :name="v.title" :placeholder="v.placeholder" :required="!v.noRequired" :label="v.title"
+            autocomplete="off"
+          >
+            <template v-if="v.rightContent" #right-icon>
+              {{ v.rightContent }}
+            </template>
+          </van-field>
+
           <van-field
             v-if="v.type === 'numberInput'" v-model="answer[v.title]" type="number" :name="v.title"
             :placeholder="v.placeholder" required :label="v.title" :label-width="v.labelWidth || '6em'"
+            autocomplete="off"
           />
 
           <van-field
@@ -355,6 +378,14 @@ function afterRead(file) {
         贵州茅台股份有限公司出品
       </p>
     </div>
+    <van-tabbar v-model="active">
+      <van-tabbar-item icon="home-o" name="home">
+        配额申购
+      </van-tabbar-item>
+      <van-tabbar-item icon="search" name="search" @click="router.push('/result')">
+        配额查询
+      </van-tabbar-item>
+    </van-tabbar>
   </div>
 </template>
 
