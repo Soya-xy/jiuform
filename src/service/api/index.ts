@@ -4,6 +4,7 @@ const api = alovaInstance()
 
 // 中心
 export const submit = (e?: any) => api.Post<any>('/v2/form/submit', e)
+export const login = (e?: any) => api.Post<any>('/v2/user/login', e)
 export function sendSms(e?: any) {
   return api.Get<any>('/v2/form/sms', {
     params: e,

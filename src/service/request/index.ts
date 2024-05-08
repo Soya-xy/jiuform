@@ -6,7 +6,8 @@ import { router } from '~/modules/router'
 
 // const baseURL = import.meta.env.DEV ? '/api' : ''
 // const baseURL = 'http://frp.xiaoyio.com/api'
-const baseURL = '/api'
+// const baseURL = '/api'
+const baseURL = 'https://form.guosuan.cc/api'
 export function alovaInstance(base = baseURL) {
   return createAlova({
     baseURL: base,
@@ -15,9 +16,9 @@ export function alovaInstance(base = baseURL) {
     requestAdapter: GlobalFetch(),
     localCache: null,
     beforeRequest(method) {
-      const token = localStorage.getItem('token')
+      const token = sessionStorage.getItem('token')
       if (token)
-        method.config.headers.Authorization = token
+        method.config.headers['x-token'] = token
     },
     responded: {
       onSuccess: async (res, method) => {
@@ -48,7 +49,7 @@ export function alovaInstance(base = baseURL) {
         return data as any
       },
       onError: (err, method) => {
-        console.log('🚀 ~ alovaInstance ~ err, method:', err, method)
+        console.error('🚀 ~ alovaInstance ~ err, method:', err, method)
       },
     },
   })

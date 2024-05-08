@@ -93,7 +93,7 @@ function search() {
 <template>
   <div>
     <van-nav-bar safe-area-inset-top title="结果查询" />
-    <img src="/logo.jpg" h-50 w-full alt="">
+    <img src="/logo.png" h-50 w-full alt="">
 
     <div v-if="info?.matchRate > 0">
       <h1 my-4>
@@ -117,6 +117,11 @@ function search() {
           查询
         </van-button>
       </div>
+    </div>
+
+    <div text-sm text-gray>
+      <p>名酒配额</p>
+      <p>贵州茅台股份有限公司出品</p>
     </div>
   </div>
 </template>
