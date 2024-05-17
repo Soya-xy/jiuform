@@ -51,9 +51,9 @@ function search() {
 
 <template>
   <div>
-    <div my-4 w-full flex justify-center px-4>
+    <!-- <div my-4 w-full flex justify-center px-4>
       <img src="/logo.png" h-100px alt="">
-    </div>
+    </div> -->
     <div my-4 px4>
       <p my4 text-xl text="#b1282d" font-600>
         名酒配额申购通道
@@ -69,8 +69,8 @@ function search() {
       </div>
     </div>
 
-    <div text-sm text-gray>
+    <!-- <div text-sm text-gray>
       <p>贵州茅台股份有限公司出品</p>
-    </div>
+    </div> -->
   </div>
 </template>
